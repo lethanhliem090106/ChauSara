@@ -4,7 +4,7 @@ import {
   VIETNAM_FOOD_DATABASE,
   CATEGORIES,
   DEFAULT_CONDITIONS,
-} from "./foodsData";
+} from "./FoodsData";
 
 // ===================== LOGO VECTOR CLEANBITE THEO BẢN THIẾT KẾ =====================
 function CleanBiteLogo({ className = "w-8 h-8" }) {
