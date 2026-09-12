@@ -756,8 +756,16 @@ export default function App() {
                               className={`p-2.5 rounded-2xl flex items-center justify-between ${darkMode ? "bg-[#202722]" : "bg-neutral-50 border border-neutral-100"}`}
                             >
                               <div className="flex items-center gap-2.5">
-                                <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-lg">
-                                  {food.icon || "🥗"}
+                                <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-lg overflow-hidden">
+                                  {food.image ? (
+                                    <img
+                                      src={food.image}
+                                      alt={food.name}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    food.icon || "🥗"
+                                  )}
                                 </div>
                                 <div>
                                   <p
@@ -883,8 +891,16 @@ export default function App() {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-2xl shadow-inner">
-                        {item.icon}
+                      <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-2xl shadow-inner overflow-hidden">
+                        {item.image ? (
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          item.icon || "🥗"
+                        )}
                       </div>
                       <div>
                         <h3
@@ -1452,8 +1468,16 @@ export default function App() {
             >
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-2xl shadow-inner">
-                    {selectedFoodForPortion.icon}
+                  <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-2xl shadow-inner overflow-hidden">
+                    {selectedFoodForPortion.image ? (
+                      <img
+                        src={selectedFoodForPortion.image}
+                        alt={selectedFoodForPortion.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      selectedFoodForPortion.icon || "🥗"
+                    )}
                   </div>
                   <div>
                     <h3
