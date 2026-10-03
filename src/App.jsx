@@ -171,37 +171,46 @@ export default function App() {
     "không cay không nóng kh ăn rau",
   );
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [aiError, setAiError] = useState("");
   const [generatedPlan, setGeneratedPlan] = useState({
-    title: "Thực đơn chuyên sâu cho người Đau dạ dày (1235 kcal)",
-    note: "Ưu tiên các món mềm, luộc/hấp thanh đạm, tránh hoàn toàn gia vị cay nóng, đồ chua gắt gây kích ứng dạ dày.",
+    title: "Thực đơn mẫu cho người Đau dạ dày (1235 kcal)",
+    note: "Đây là thực đơn minh họa dựng sẵn. Nhấn nút tạo thực đơn để nhận gợi ý từ Gemini; dinh dưỡng chỉ là ước tính.",
     meals: [
       {
         slot: "Bữa Sáng (07:00)",
         name: "Cháo yến mạch ức gà xé phay mềm",
-        grams: "180g cháo + 70g ức gà",
+        grams: 250,
         calories: 290,
+        carbs: 36,
         protein: 26,
+        fat: 4,
       },
       {
         slot: "Bữa Trưa (11:30)",
         name: "Cơm gạo lứt mềm + Cá hồi áp chảo + Bí đỏ hấp",
-        grams: "130g cơm + 120g cá hồi + 100g bí",
+        grams: 350,
         calories: 460,
+        carbs: 42,
         protein: 34,
+        fat: 14,
       },
       {
         slot: "Bữa Tối (18:30)",
         name: "Đậu hũ non sốt nấm hương + Canh rong biển",
-        grams: "150g đậu hũ + 80g nạc heo",
+        grams: 230,
         calories: 320,
+        carbs: 18,
         protein: 28,
+        fat: 12,
       },
       {
         slot: "Bữa Phụ (15:00)",
         name: "1 Quả chuối tiêu chín + 1 cốc sữa chua ấm",
-        grams: "1 quả chuối + 100g sữa chua",
+        grams: 200,
         calories: 165,
+        carbs: 28,
         protein: 5,
+        fat: 3,
       },
     ],
   });
@@ -287,100 +296,72 @@ export default function App() {
 
   // Nhập cả thực đơn AI vào nhật ký
   const handleImportAiPlanToDiary = () => {
-    setMealLogs({
-      breakfast: [
+    const slots = ["breakfast", "lunch", "dinner", "snack"];
+    const icons = ["🥣", "🍚", "🍲", "🍌"];
+    const importedMeals = {
+      breakfast: [],
+      lunch: [],
+      dinner: [],
+      snack: [],
+    };
+
+    generatedPlan.meals.forEach((meal, index) => {
+      const slot = slots[index];
+      if (!slot) return;
+      importedMeals[slot] = [
         {
-          id: Date.now() + 1,
-          name: "Cháo yến mạch ức gà xé phay mềm",
-          grams: 250,
-          calories: 290,
-          carbs: 36,
-          protein: 26,
-          fat: 4,
-          icon: "🥣",
+          id: `${Date.now()}_${index}`,
+          name: meal.name,
+          grams: meal.grams,
+          calories: meal.calories,
+          carbs: meal.carbs,
+          protein: meal.protein,
+          fat: meal.fat,
+          icon: icons[index],
         },
-      ],
-      lunch: [
-        {
-          id: Date.now() + 2,
-          name: "Cơm gạo lứt mềm + Cá hồi áp chảo",
-          grams: 250,
-          calories: 460,
-          carbs: 42,
-          protein: 34,
-          fat: 14,
-          icon: "🐟",
-        },
-      ],
-      dinner: [
-        {
-          id: Date.now() + 3,
-          name: "Đậu hũ non hấp sốt nấm hương",
-          grams: 230,
-          calories: 320,
-          carbs: 18,
-          protein: 28,
-          fat: 12,
-          icon: "🧊",
-        },
-      ],
-      snack: [
-        {
-          id: Date.now() + 4,
-          name: "Chuối tiêu chín + Sữa chua ấm",
-          grams: 200,
-          calories: 165,
-          carbs: 28,
-          protein: 5,
-          fat: 3,
-          icon: "🍌",
-        },
-      ],
+      ];
     });
+
+    setMealLogs(importedMeals);
     setActiveTab("journal");
   };
 
   // Tạo thực đơn AI mới
-  const handleRegenerateAi = () => {
+  const handleRegenerateAi = async () => {
     setIsAiLoading(true);
-    setTimeout(() => {
-      setIsAiLoading(false);
-      setGeneratedPlan({
-        title: `Thực đơn ${profile.conditions.join(", ")} - Dễ tiêu hoá`,
-        note: `Đã loại trừ yêu cầu: "${aiDislikesInput}". Chia làm 4 bữa thanh đạm dễ tiêu hóa, giữ trọn năng lượng 1235 kcal.`,
-        meals: [
-          {
-            slot: "Bữa Sáng (07:00)",
-            name: "Khoai lang vàng luộc mềm + 2 Trứng gà luộc",
-            grams: "150g khoai + 100g trứng",
-            calories: 275,
-            protein: 18,
-          },
-          {
-            slot: "Bữa Trưa (12:00)",
-            name: "Cơm trắng mềm + Tôm sú hấp sả + Canh bầu luộc",
-            grams: "130g cơm + 120g tôm + 1 bát canh",
-            calories: 440,
-            protein: 36,
-          },
-          {
-            slot: "Bữa Tối (18:30)",
-            name: "Thịt thăn heo áp chảo nhẹ + Mướp hương luộc",
-            grams: "120g thịt + 150g mướp",
-            calories: 350,
-            protein: 32,
-          },
-          {
-            slot: "Bữa Phụ (15:30)",
-            name: "1 Hộp sữa chua hạt ít đường",
-            grams: "1 hộp 120ml",
-            calories: 120,
-            protein: 6,
-          },
-        ],
+    setAiError("");
+
+    try {
+      const response = await fetch("/api/generate-plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          conditions: profile.conditions,
+          dislikes: aiDislikesInput,
+          targetCalories,
+        }),
       });
-    }, 600);
-    chochau;
+      let result;
+      try {
+        result = await response.json();
+      } catch {
+        throw new Error("Máy chủ trả về phản hồi không hợp lệ. Vui lòng thử lại.");
+      }
+
+      if (!response.ok) {
+        throw new Error(result.error || "Không thể tạo thực đơn lúc này.");
+      }
+
+      setGeneratedPlan(result);
+    } catch (error) {
+      setAiError(
+        error instanceof Error
+          ? error.message
+          : "Không thể kết nối dịch vụ AI. Vui lòng thử lại.",
+      );
+    } finally {
+      setIsAiLoading(false);
+    }
   };
 
   // Tự nhập thêm bệnh lý
@@ -987,6 +968,22 @@ export default function App() {
                       ? "AI đang phân tích và tính toán..."
                       : "✨ AI tạo thực đơn mới"}
                   </button>
+                  <p className="text-[10px] leading-relaxed text-neutral-400">
+                    Khi tạo thực đơn, bệnh lý đã chọn, yêu cầu riêng và mục
+                    tiêu calo sẽ được gửi tới Google Gemini. Tên, cân nặng và
+                    chiều cao không được gửi. Theo điều khoản gói miễn phí,
+                    Google có thể dùng nội dung để cải thiện sản phẩm. Gợi ý
+                    dinh dưỡng chỉ mang tính tham khảo, không thay thế tư vấn y
+                    tế.
+                  </p>
+                  {aiError && (
+                    <p
+                      role="alert"
+                      className="text-xs text-red-500 font-medium"
+                    >
+                      {aiError}
+                    </p>
+                  )}
                 </div>
 
                 {/* Kết quả AI */}
@@ -1025,7 +1022,7 @@ export default function App() {
                             {meal.name}
                           </p>
                           <span className="text-[10px] text-neutral-400 block mt-0.5">
-                            {meal.grams}
+                            {meal.grams}g
                           </span>
                         </div>
                         <div className="text-right">
